@@ -12,11 +12,11 @@ The result? AI agents that can handle file operations, time queries, and LLM con
 
 ## Core Files
 
-- `temporal_ollama_agent.py` - Main agent with Temporal workflows and activities
-- `temporal_agent_worker.py` - Worker process that executes agent workflows
-- `temporal_agent_client.py` - Client to interact with running agents
+- `agent.py` - Main agent with Temporal workflows and activities
+- `worker.py` - Worker process that executes agent workflows
+- `client.py` - Client to interact with running agents
 - `ollama_agent.py` - Direct Ollama integration (no Temporal)
-- `my-agent.py` - Simple Strands agent example
+- `simple_agent.py` - Simple Strands agent example
 
 ## Quick Start
 
@@ -39,12 +39,12 @@ temporal server start-dev
 
 **Terminal 1 - Start the Worker:**
 ```bash
-python temporal_agent_worker.py
+python worker.py
 ```
 
 **Terminal 2 - Run Tasks:**
 ```bash
-python temporal_agent_client.py
+python client.py
 ```
 
 ## How It Works
@@ -99,7 +99,7 @@ When you run the agent, you can monitor everything through Temporal's web interf
 - No execution history
 - Hard to debug issues
 
-**With Temporal** (see `temporal_ollama_agent.py`):
+**With Temporal** (see `agent.py`):
 - Automatic retries with backoff
 - Complete execution visibility
 - Fault tolerance
@@ -128,8 +128,8 @@ result = await client.execute_task("What is Python?", "task-1")
 ## Development
 
 ### Adding New Activities
-1. Create activity function in `temporal_ollama_agent.py`
-2. Register it in `temporal_agent_worker.py`
+1. Create activity function in `agent.py`
+2. Register it in `worker.py`
 3. Add routing logic in `OllamaAgentWorkflow.run()`
 
 ### Testing Different Models

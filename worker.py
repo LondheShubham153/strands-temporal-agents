@@ -1,7 +1,7 @@
 import asyncio
 from temporalio.client import Client
 from temporalio.worker import Worker
-from temporal_ollama_agent import (
+from agent import (
     OllamaAgentWorkflow,
     read_file_activity,
     list_files_activity, 

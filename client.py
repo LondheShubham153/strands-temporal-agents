@@ -1,6 +1,6 @@
 import asyncio
 from temporalio.client import Client
-from temporal_ollama_agent import OllamaAgentWorkflow
+from agent import OllamaAgentWorkflow
 
 TASK_QUEUE = "ollama-agent-queue"
 TEMPORAL_HOST = "localhost:7233"
