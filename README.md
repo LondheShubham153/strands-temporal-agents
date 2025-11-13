@@ -4,7 +4,7 @@ A comparison of two approaches to building AI agents: simple direct execution vs
 
 ## What's This About?
 
-I built the same AI agent two different ways to show the trade-offs between simplicity and reliability:
+Two different ways to build the same AI agent to show the trade-offs between simplicity and reliability:
 
 - **Simple version** (`agent.py`) - Runs directly, great for development
 - **Temporal version** - Distributed with retries, monitoring, and fault tolerance

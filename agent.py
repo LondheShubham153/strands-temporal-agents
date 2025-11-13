@@ -2,60 +2,79 @@ import os
 from datetime import datetime
 from strands import Agent, tool
 from strands.models.ollama import OllamaModel
-from config import OLLAMA_HOST, OLLAMA_MODEL
+from config import OLLAMA_HOST, OLLAMA_MODEL, WEATHER_TIMEOUT
 
 
 @tool
-def read_file(path: str) -> str:
-    try:
-        with open(path, 'r', encoding='utf-8') as f:
-            return f.read()
-    except FileNotFoundError:
-        return f"File not found: {path}"
-    except Exception as e:
-        return f"Error: {str(e)}"
-
-
-@tool
-def list_files(directory: str = ".") -> str:
-    try:
-        files = os.listdir(directory)
-        return "\n".join(files)
-    except Exception as e:
-        return f"Error: {str(e)}"
-
-
-@tool
-def get_current_time() -> str:
+def get_time() -> str:
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 
-def create_agent():
+@tool
+def list_files() -> str:
+    try:
+        files = [f for f in os.listdir('.') if f.endswith('.py')]
+        return f"Python files: {', '.join(files[:5])}"
+    except Exception as e:
+        return f"File listing error: {str(e)}"
+
+
+@tool
+def get_weather(city: str) -> str:
+    try:
+        import requests
+        
+        url = f"https://wttr.in/{city}?format=%C+%t"
+        response = requests.get(url, timeout=WEATHER_TIMEOUT)
+        
+        if response.status_code == 200:
+            weather_data = response.text.strip()
+            return f"{city}: {weather_data}"
+        
+        return f"Weather data unavailable for {city}"
+        
+    except Exception as e:
+        return f"Weather service error for {city}: {str(e)}"
+
+
+def create_agent() -> Agent:
     return Agent(
         model=OllamaModel(host=OLLAMA_HOST, model_id=OLLAMA_MODEL),
-        tools=[read_file, list_files, get_current_time],
-        system_prompt="You are a helpful assistant. Give responses in not more than 2-3 lines."
+        tools=[get_time, list_files, get_weather],
+        system_prompt="Use available tools to provide accurate, helpful responses."
     )
 
 
-def run_demo():
+def main():
+    print("Simple Agent Demo")
+    print("Type 'quit' to exit")
+    print()
+    
     agent = create_agent()
     
-    demo_tasks = [
-        "What time is it?",
-        "List files in current directory", 
-        "Read file ../requirements.txt",
-        "What is artificial intelligence?"
-    ]
-    
-    for task in demo_tasks:
-        print(f"Task: {task}")
+    while True:
         try:
+            task = input("Enter task: ").strip()
+            
+            if task.lower() in ['quit', 'q', 'exit']:
+                print("Goodbye!")
+                break
+            
+            if not task:
+                continue
+            
+            print("Processing...")
             result = agent(task)
-            print(f"Result: {result}\n")
+            print(f"Result: {result}")
+            print()
+            
+        except KeyboardInterrupt:
+            print("\nGoodbye!")
+            break
         except Exception as e:
-            print(f"Error: {e}\n")
+            print(f"Error: {e}")
+            print()
 
 
 if __name__ == "__main__":
-    run_demo()
+    main()
